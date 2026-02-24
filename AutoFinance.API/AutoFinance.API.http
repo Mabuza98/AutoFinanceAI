@@ -1,0 +1,6 @@
+@AutoFinance.API_HostAddress = http://localhost:5206
+
+GET {{AutoFinance.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
