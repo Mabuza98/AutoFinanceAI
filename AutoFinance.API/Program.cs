@@ -1,29 +1,28 @@
 using AutoFinance.API.Services;
 using FluentValidation;
+using Azure.Identity;
+using Azure.AI.OpenAI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --------------------
 // Add services
-// --------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddValidatorsFromAssemblyContaining<FinanceRequestValidator>();
 
-// Register AiAdviceService (it now reads the API key safely from IConfiguration)
+// AI Service using Managed Identity
 builder.Services.AddScoped<AiAdviceService>();
 
 builder.Services.AddScoped<IFinancialCalculator, FinancialCalculator>();
 
-// --------------------
-// CORS policy
-// --------------------
+// CORS
+var corsOrigins = builder.Configuration["Cors:AllowedOrigins"]?.Split(';') ?? new string[] { "http://localhost:3000" };
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // fix typo
+        policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -31,18 +30,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// --------------------
 // Middleware / pipeline
-// --------------------
-
-
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-
+}
 
 app.UseHttpsRedirection();
 
-// Enable CORS before Authorization
 app.UseCors("AllowReactApp");
 
 app.UseAuthorization();
