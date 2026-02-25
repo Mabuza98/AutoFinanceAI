@@ -19,7 +19,10 @@ function App() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
 
     const analyzeFinance = async () => {
@@ -28,13 +31,29 @@ function App() {
         setResult(null);
 
         try {
-            // ✅ Read from environment variable
             const API_URL = process.env.REACT_APP_API_URL;
+
+            if (!API_URL) {
+                throw new Error("API URL not configured.");
+            }
+
+            const payload = {
+                monthlySalary: Number(formData.monthlySalary),
+                otherIncome: Number(formData.otherIncome),
+                monthlyExpenses: Number(formData.monthlyExpenses),
+                existingDebtPayments: Number(formData.existingDebtPayments),
+                carPrice: Number(formData.carPrice),
+                deposit: Number(formData.deposit),
+                interestRate: Number(formData.interestRate),
+                loanTermMonths: Number(formData.loanTermMonths),
+            };
 
             const response = await fetch(`${API_URL}/api/Finance/analyze`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -42,13 +61,10 @@ function App() {
             }
 
             const data = await response.json();
-            console.log(data);
-
-            // ✅ Save result to state
             setResult(data);
         } catch (err) {
             console.error("Error fetching data:", err);
-            setError("Failed to fetch AI advice. Check the backend.");
+            setError("Failed to fetch AI advice. Check backend or CORS.");
         } finally {
             setLoading(false);
         }
@@ -84,11 +100,13 @@ function App() {
                     <p>Total Income: {result.totalIncome}</p>
                     <p>
                         Estimated Installment:{" "}
-                        {result.estimatedInstallmentFormatted || result.estimatedInstallment}
+                        {result.estimatedInstallmentFormatted ||
+                            result.estimatedInstallment}
                     </p>
                     <p>
                         Debt-to-Income Ratio:{" "}
-                        {result.debtToIncomeRatioFormatted || result.debtToIncomeRatio}
+                        {result.debtToIncomeRatioFormatted ||
+                            result.debtToIncomeRatio}
                     </p>
                     <p>Risk Level: {result.riskLevel}</p>
                     <p>Approval Probability: {result.approvalProbability}%</p>
