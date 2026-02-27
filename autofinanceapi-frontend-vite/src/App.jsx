@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./App.css";
 
 function App() {
     const [formData, setFormData] = useState({
@@ -16,8 +17,13 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL;
-    //console.log("API URL:", API_URL);
+    // Format numbers as South African Rands
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("en-ZA", {
+            style: "currency",
+            currency: "ZAR",
+        }).format(amount);
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,55 +36,74 @@ function App() {
         setResult(null);
 
         try {
-            const payload = Object.fromEntries(
-                Object.entries(formData).map(([k, v]) => [k, Number(v)])
-            );
+            const API_URL = import.meta.env.VITE_API_URL;
+            if (!API_URL) throw new Error("API URL not configured.");
+
+            const payload = {
+                monthlySalary: Number(formData.monthlySalary),
+                otherIncome: Number(formData.otherIncome),
+                monthlyExpenses: Number(formData.monthlyExpenses),
+                existingDebtPayments: Number(formData.existingDebtPayments),
+                carPrice: Number(formData.carPrice),
+                deposit: Number(formData.deposit),
+                interestRate: Number(formData.interestRate),
+                loanTermMonths: Number(formData.loanTermMonths),
+            };
 
             const response = await fetch(`${API_URL}/api/Finance/analyze`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
 
-            if (!response.ok) {
-                throw new Error("Server error");
-            }
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
             const data = await response.json();
             setResult(data);
         } catch (err) {
-            console.error(err);
-            setError("Failed to connect to backend. Check if API is running.");
+            console.error("Error fetching data:", err);
+            setError("Failed to fetch AI advice. Check backend or CORS.");
         } finally {
             setLoading(false);
         }
     };
 
-    const formatCurrency = (num) =>
-        typeof num === "number" ? `R${num.toLocaleString()}` : num;
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 text-white p-6">
-            <h1 className="text-3xl font-bold text-center mb-8">
-                🚗 AutoFinance AI - Loan Readiness Analyzer
-            </h1>
+        <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-gradient-to-br from-indigo-200 via-blue-100 to-cyan-100">
 
-            <div className="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
-                {/* FORM */}
-                <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl border border-white/20 shadow-xl">
-                    <h2 className="text-xl font-semibold mb-4">Your Information</h2>
+            {/* Floating background blobs */}
+            <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-300 opacity-30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute top-1/2 -right-32 w-96 h-96 bg-indigo-400 opacity-30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-cyan-300 opacity-30 rounded-full blur-3xl animate-pulse"></div>
+
+            <div className="relative max-w-6xl w-full bg-white rounded-2xl shadow-xl p-6 md:p-12 grid md:grid-cols-2 gap-8">
+
+                {/* Left: Form */}
+                <div className="space-y-5 overflow-y-auto max-h-[80vh] pr-2">
+                    <h1 className="text-3xl font-bold text-indigo-700">
+                        AutoFinance AI
+                    </h1>
+
+                    <p className="text-gray-600">
+                        Enter your financial details to analyze loan readiness and get AI advice
+                    </p>
 
                     {Object.keys(formData).map((key) => (
-                        <div key={key} className="mb-3">
-                            <label className="block text-sm mb-1">{key}</label>
+                        <div key={key} className="flex flex-col items-start">
+                            <label className="text-gray-700 font-medium mb-1 capitalize">
+                                {key.replace(/([A-Z])/g, " $1")}
+                            </label>
+
                             <input
                                 type="number"
                                 name={key}
                                 value={formData[key]}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-md bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-blue-400"
+                                className="border border-gray-300 rounded-lg px-3 py-2 
+                                           w-full max-w-sm 
+                                           focus:outline-none focus:ring-2 
+                                           focus:ring-indigo-400 focus:border-indigo-400 
+                                           transition"
                             />
                         </div>
                     ))}
@@ -86,64 +111,57 @@ function App() {
                     <button
                         onClick={analyzeFinance}
                         disabled={loading}
-                        className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50"
+                        className="mt-6 w-full max-w-sm bg-indigo-600 text-white 
+                                   font-semibold py-3 rounded-lg 
+                                   hover:bg-indigo-700 active:scale-95 
+                                   transition duration-200 shadow-md"
                     >
                         {loading ? "Analyzing..." : "Analyze"}
                     </button>
 
-                    {error && <p className="mt-2 text-red-400">{error}</p>}
+                    {error && <p className="text-red-500 mt-3">{error}</p>}
                 </div>
 
-                {/* RESULTS */}
-                <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl border border-white/20 shadow-xl">
-                    <h2 className="text-xl font-semibold mb-4">Results</h2>
-
-                    {loading && <p className="animate-pulse">Analyzing... 🚀</p>}
-
-                    {result && (
+                {/* Right: Results */}
+                <div className="bg-indigo-50 rounded-xl p-6 max-h-[80vh] overflow-y-auto shadow-inner">
+                    {result ? (
                         <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span>Total Income:</span>
-                                <span>{formatCurrency(result.totalIncome)}</span>
-                            </div>
+                            <h2 className="text-xl font-bold text-indigo-700 mb-3">
+                                Results
+                            </h2>
 
-                            <div className="flex justify-between">
-                                <span>Estimated Installment:</span>
-                                <span>{formatCurrency(result.estimatedInstallment)}</span>
-                            </div>
+                            <p>Total Income: {formatCurrency(result.totalIncome)}</p>
 
-                            <div className="flex justify-between">
-                                <span>Debt-to-Income Ratio:</span>
-                                <span>{result.debtToIncomeRatio}%</span>
-                            </div>
+                            <p>
+                                Estimated Installment:{" "}
+                                {formatCurrency(result.estimatedInstallment)}
+                            </p>
 
-                            <div className="flex justify-between">
-                                <span>Approval Probability:</span>
-                                <span>{result.approvalProbability}%</span>
-                            </div>
+                            <p>
+                                Debt-to-Income Ratio:{" "}
+                                {result.debtToIncomeRatioFormatted ||
+                                    result.debtToIncomeRatio}
+                            </p>
 
-                            <div className="flex justify-between">
-                                <span>Risk Level:</span>
-                                <span
-                                    className={`px-3 py-1 rounded-full font-bold ${result.riskLevel === "Low"
-                                            ? "bg-green-500/20 text-green-300"
-                                            : result.riskLevel === "Medium"
-                                                ? "bg-yellow-500/20 text-yellow-300"
-                                                : "bg-red-500/20 text-red-300"
-                                        }`}
-                                >
-                                    {result.riskLevel}
-                                </span>
-                            </div>
+                            <p>Risk Level: {result.riskLevel}</p>
 
-                            <div className="mt-4 bg-blue-500/10 p-3 rounded-lg border border-blue-400/30">
-                                <p>{result.advice}</p>
-                            </div>
+                            <p>
+                                Approval Probability: {result.approvalProbability}%
+                            </p>
+
+                            <p>
+                                Suggested Car Price:{" "}
+                                {formatCurrency(result.suggestedCarPrice)}
+                            </p>
+
+                            <p className="mt-3 font-semibold text-indigo-800 bg-white p-3 rounded-lg shadow-sm">
+                                Advice: {result.advice}
+                            </p>
                         </div>
-                    )}
-
-                    {!result && !loading && (
-                        <p className="text-white/70">Results will appear here.</p>
+                    ) : (
+                        <p className="text-gray-400 mt-10">
+                            Your AI advice will appear here after analyzing.
+                        </p>
                     )}
                 </div>
             </div>
