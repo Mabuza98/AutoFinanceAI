@@ -1,66 +1,101 @@
-# AutoFinance AI 🚗💰
+🚗 AutoFinance AI
+A full-stack AI-powered car finance analysis application built to demonstrate backend engineering, financial logic, API architecture, and frontend integration.
 
-## Portfolio Showcase
+==========
 
-**AutoFinance AI** is a full-stack car finance application built to demonstrate **backend financial logic, API development, and frontend integration**.  
-It calculates car loan affordability, predicts approval likelihood, evaluates risk, and suggests safer car prices for users.  
+🌍 Live Demo
+Frontend:
+https://autofinance-frontend.vercel.app⁠
 
-This project showcases:  
-- Full-stack development skills (C# ASP.NET Core + React/Angular/Blazor)  
-- Clean layered architecture (**Models → Services → Controllers**)  
-- Professional API design with **Swagger UI**  
-- Practical financial algorithms with real-world applicability  
+Backend API (Swagger):
+https://autofinanceapi-e2g3a5hwbaergyg6.southafricanorth-01.azurewebsites.net
 
-**This repo is designed as a portfolio piece to demonstrate coding skills, architectural understanding, and front-to-back project delivery.**
+==========
 
+🧠 What This Project Demonstrates
 
-# AutoFinance AI
+As a Junior AI Engineer / Developer, this project showcases:
 
-## Overview
-AutoFinance AI is a full-stack car finance project that calculates car loan affordability, risk scoring, and suggests a safer car price for users. The project demonstrates backend financial logic, API development, and frontend integration.
+-Designing and building a RESTful API using ASP.NET Core
+-Implementing real-world financial algorithms (loan & DTI calculations)
+-Risk scoring and approval probability logic
+-AI-generated financial advice integration
+-Clean layered backend architecture (Models → Services → Controllers)
+-Cloud deployment (Azure App Service + Vercel)
+-Full frontend-to-backend integration
 
+==========
+
+⚙️ Core Features
+
+-Monthly loan installment calculation
+-Debt-to-Income (DTI) ratio analysis
+-Risk level classification
+-Approval likelihood estimation
+-Safer car price suggestion
+-AI-powered financial recommendations
+-Swagger documentation for API testing
+
+==========
+
+🏗 Architecture
+
+Backend follows clean separation of concerns:
+> Models – Request & response contracts
+< Services – Business logic & financial calculations
+< Controllers – API endpoints
+< Dependency Injection – Clean service registration
+
+This structure ensures scalability and maintainability.
+
+==========
+
+🛠 Tech Stack
+
+ Backend
+- C#
+- ASP.NET Core Web API
+- Swagger
+- Azure App Service
+  
+Frontend
+- React (Vite)
+- Tailwind CSS
+- Axios for API communication
+  
+Cloud
+- Azure (Backend hosting)
+- Vercel (Frontend hosting)
+
+  ==========
+  
+📂 Project Structure
+
+AutoFinance.API/              → ASP.NET Core backend
+autofinanceapi-frontend/     → React frontend
+docs/                         → Screenshots & documentation
+AutoFinance.slnx              → Visual Studio solution
+
+==========
+
+🚀 Running Locally
+
+Backend
 ---
-
-## Project Structure
-
-- `AutoFinance.API/` → Backend (ASP.NET Core Web API)  
-- `AutoFinanceAPI-Frontend/` → Frontend (React / Angular / Blazor)  
-
----
-
-## Features
-
-- Calculates monthly loan installments  
-- Calculates Debt-to-Income ratio  
-- Provides risk level and approval probability  
-- Suggests safer car price if DTI is too high  
-- Clean layered architecture: Models → Services → Controllers  
-- Swagger UI ready for API testing  
-
----
-
-## Tech Stack
-
-- Backend: ASP.NET Core Web API  
-- Frontend: React / Angular / Blazor  
-- Language: C#  
-- Tools: Visual Studio, Node.js, npm  
-
----
-
-## How to Run
-
-### Backend
 bash
 cd AutoFinance.API
 dotnet run
-Backend runs at https://localhost:44376/swagger/index.html
+Swagger runs at:
+https://localhost:44376/swagger
 
-### Frontend
+Frontend
 powershell
-cd autofinanceapi-frontend
-npm start
-Frontend runs at http://localhost:3000
+cd autofinanceapi-frontend-vite
+npm run dev
+Frontend runs at:
+http://localhost:5173
+
+==========
 
 ## Screenshots
 
@@ -69,3 +104,16 @@ Frontend runs at http://localhost:3000
 
 **Frontend:**  
 ![Frontend](docs/frontend.png)
+
+==========
+
+👨‍💻 About Me
+
+I am a Junior AI Engineer focused on:
+- Backend API development
+- AI integration
+- Applied financial logic
+- Cloud deployment
+- Full-stack engineering fundamentals
+- 
+This project reflects my ability to design, build, deploy, and integrate a complete AI-enabled system.
